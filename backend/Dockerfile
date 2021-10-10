@@ -10,20 +10,10 @@ ENV PYTHONDONTWRITEBYTECODE 1
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED 1
 
-COPY ./requirements.txt /requirements.txt
-
-RUN apt-get update && apt-get install nano \
-    && addgroup appgroup && adduser --ingroup appgroup --disabled-password appuser \
-    && rm /bin/sh && ln -s /bin/bash /bin/sh \
-    && mkdir /app && pip install --upgrade pip \
-    && pip install -r /requirements.txt
-
-COPY --chown=appuser:appgroup ./app /app
-
 WORKDIR /app
 
-# Switching to a non-root user
-USER appuser
+COPY ./ /app/
 
-# run gunicorn
-CMD gunicorn app.wsgi:application --bind 0.0.0.0:$PORT
+RUN apt-get update \
+    && pip install --upgrade pip \
+    && pip install -r requirements.txt
