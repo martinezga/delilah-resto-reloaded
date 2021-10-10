@@ -14,12 +14,12 @@ services:
   db:
     container_name: db_container
     image: postgres
-    volumes:
-      - ./data/db:/var/lib/postgresql/data
     env_file:
       - .env
     ports:
       - "${DB_PORT}:5432"
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
     networks:
       - db_network
 
@@ -40,11 +40,13 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - .:/app
+    env_file:
+      - .env
     ports:
       - "${BACKEND_PORT}:8000"
+    command: python manage.py runserver 0.0.0.0:${BACKEND_PORT}
+    volumes:
+      - ./backend:/app
     networks:
       - db_network
       - app_network
